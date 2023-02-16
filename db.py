@@ -23,10 +23,10 @@ def start():
     status  TEXT);''')
     conn.commit()
 
-def add_product(company_name, model_name, price):
+def add_product(company_name, model_name, price, description):
     conn = sqlite3.connect('main.db')
     cur = conn.cursor()
-    cur.execute(f'''INSERT INTO products(company_name, model_name, price) VALUES ('{company_name}', '{model_name}', {price});''')
+    cur.execute(f'''INSERT INTO products(company_name, model_name, price, description) VALUES ('{company_name}', '{model_name}', {price}, '{description}');''')
     conn.commit()
 def get_product_by_id(product_id):
     conn = sqlite3.connect('main.db')
@@ -71,7 +71,7 @@ def add_product_to_korzina(product_id, user_id):
     cur.execute(f'''SELECT * FROM users WHERE user_id = {user_id};''')
     data = cur.fetchall()[0][2]
     data += f' {product_id}'
-    cur.execute(f'''UPDATE users SET korzina = {data} WHERE user_id = {user_id};''')
+    cur.execute(f'''UPDATE users SET korzina = '{data}' WHERE user_id = {user_id};''')
     conn.commit()
 def get_company_names():
     conn = sqlite3.connect('main.db')
@@ -90,6 +90,8 @@ def get_user(user_id):
     conn = sqlite3.connect('main.db')
     cur = conn.cursor()
     cur.execute(f'''SELECT * FROM users WHERE user_id = {user_id}''')
+    data = cur.fetchall()[0]
+    return data
 def clean_korzina(user_id):
     conn = sqlite3.connect('main.db')
     cur = conn.cursor()
@@ -112,3 +114,5 @@ def create_korzina_txt(user_id):
         product = get_product_by_id(int(product_id))
         products.append(f'{product[1]}: {product[2]}')
     return '\n'.join(products)
+
+

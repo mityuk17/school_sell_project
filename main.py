@@ -23,6 +23,7 @@ class States(StatesGroup):
 
 @dp.message_handler(commands=[ 'start' ])
 async def start(message: types.Message):
+    db.create_user(message.chat.id)
     kb = types.InlineKeyboardMarkup()
     kb.add(types.InlineKeyboardButton(text='Товары' , callback_data='show_products'))
     kb.add(types.InlineKeyboardButton(text='Корзина' , callback_data='show_korzina'))
@@ -55,13 +56,13 @@ async def create_payment(message: types.Message, state: FSMContext):
     kb.add(types.InlineKeyboardButton(text='Проверить оплату', callback_data='check_payment_'+bill_id))
     await message.answer(f'''Перейдите по ссылке для оплаты:
 {pay_url}''', reply_markup=kb)
-@dp.message_handler(lambda query: query.data.startswith('check_payment_'))
+@dp.callback_query_handler(lambda query: query.data.startswith('check_payment_'))
 async def check_payment(callback_query : types.CallbackQuery):
     bill_id = callback_query.data.split('_')[ -1 ]
     status , response = conn.check_bill(bill_id)
     if status == 'PAID':
         await callback_query.message.edit_text(text='Оплата прошла успешно, деньги зачислены на ваш баланс', reply_markup=None)
-        db.confirm_payment(bill_id)
+        db.confirm_payment(bill_id, callback_query.message.chat.id)
     else:
         await callback_query.answer('Платёж не подтверждён.')
 @dp.callback_query_handler(lambda query: query.data == 'show_products')
@@ -73,15 +74,15 @@ async def show_products(callback_query: types.CallbackQuery):
     await callback_query.message.answer('Выберите производителя' , reply_markup=kb)
 
 
-@dp.callback_query_handler(lambda query: query.startswith('company_'))
+@dp.callback_query_handler(lambda query: query.data.startswith('company_'))
 async def show_company_products(callback_query: types.CallbackQuery):
     company = callback_query.data.split('_')[ 1 ]
     kb = types.InlineKeyboardMarkup()
     products = db.get_company_products(company)
     for product in products:
-        kb.add(types.InlineKeyboardButton(text=product[ 1 ] , callback_data=f'show_id_{product[ 0 ]}'))
+        kb.add(types.InlineKeyboardButton(text=product[ 2 ] , callback_data=f'show_id_{product[ 0 ]}'))
     kb.add(types.InlineKeyboardButton(text='Назад' , callback_data='show_products'))
-    await callback_query.message.edit_text(text='Выберите товар' , reply_markup=kb)
+    await callback_query.message.edit_text(text=f'Выберите товар производителя {company}' , reply_markup=kb)
 
 
 @dp.callback_query_handler(lambda query: query.data.startswith('show_id_'))
