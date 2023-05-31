@@ -1,4 +1,4 @@
-telegram_token = '1817474310:AAFd3zZ0KF6_GdsBqgy-I1QtdyvCDGO7d5Y'
-admin_link = 'https://t.me/Mi_17Mi'
-admin_id = 547380383
-QIWI_token = 'eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6IjM5cm1rei0wMCIsInVzZXJfaWQiOiI3OTE5Njg2MzA3MiIsInNlY3JldCI6IjFkMzU1ZjAwN2YyNzY2ZWQ1YjUxYWI0OTM4ZjliMWIzYmIxZDQyZGMwMzc3MGI5Mzc1NzExNjNmMjYwMzgyMGYifX0='
+telegram_token = ''
+admin_link = ''
+admin_id = 0
+QIWI_token = ''
